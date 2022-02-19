@@ -21,47 +21,54 @@ private:
         auto len = std::abs(std::abs(in - out) < eps ? 2 * in : out - in);
         return cut / len;
     }
-    static Vector<3, double> clipPoint(Vector<3, double> in, Vector<3, double> out, int axisIndex, double bound) {
-        auto t = clipCoefficient(in[axisIndex], out[axisIndex], bound);
-        return Vector<3, double>(in.x + (out.x - in.x) * t,
-                               in.y + (out.y - in.y) * t,
-                               in.z + (out.z - in.z) * t);
+    static Vertex clipVertex(Vertex in, Vertex out, int axisIndex, double bound) {
+        auto t = clipCoefficient(in.position[axisIndex], out.position[axisIndex], bound);
+        Vertex result = in;
+        auto clippedPosition = (out.position - in.position) * t;
+        result.position += clippedPosition;
+        auto clippedWorldPosition = (out.worldPosition - in.worldPosition) * t;
+        result.worldPosition += clippedWorldPosition;
+        auto clippedTexture = (out.texture - in.texture) * t;
+        result.texture += clippedTexture;
+        auto clippedNormal = (out.normal - in.normal) * t;
+        result.normal = (result.normal + clippedNormal).normalize();
+        return result;
     }
-    static std::vector<std::array<Vertex, 3>> clipPair(const Vector<3, double>& in0,
-                                             const Vector<3, double>& in1,
-                                             const Vector<3, double>& out, int axisIndex, double bound) {
-        auto clip0 = clipPoint(in0, out, axisIndex, bound);
-        auto clip1 = clipPoint(in1, out, axisIndex, bound);
+    static std::vector<std::array<Vertex, 3>> clipPair(const Vertex& in0,
+                                             const Vertex& in1,
+                                             const Vertex& out, int axisIndex, double bound) {
+        auto clip0 = clipVertex(in0, out, axisIndex, bound);
+        auto clip1 = clipVertex(in1, out, axisIndex, bound);
         return {{in0, clip0, clip1},
                 {in0, in1, clip1}};
     }
-    static std::vector<std::array<Vertex, 3>> clipSingle(const Vector<3, double>& in,
-                                             const Vector<3, double>& out0,
-                                             const Vector<3, double>& out1, int axisIndex, double bound) {
-        auto clip0 = clipPoint(in, out0, axisIndex, bound);
-        auto clip1 = clipPoint(in, out1, axisIndex, bound);
+    static std::vector<std::array<Vertex, 3>> clipSingle(const Vertex& in,
+                                             const Vertex& out0,
+                                             const Vertex& out1, int axisIndex, double bound) {
+        auto clip0 = clipVertex(in, out0, axisIndex, bound);
+        auto clip1 = clipVertex(in, out1, axisIndex, bound);
         return {{in, clip0, clip1}};
     }
     static std::vector<Primitive> clipFunc(const Primitive& primitive, int axisIndex, double bound,
                                     const std::function<bool(const double&, const double&)>& comp) {
         auto vertices = primitive.vertices();
         auto test = [&](int vertexIndex) {
-            return comp(vertices[vertexIndex][axisIndex], bound);
+            return comp(vertices[vertexIndex].position[axisIndex], bound);
         };
         auto test0 = test(0), test1 = test(1), test2 = test(2);
         auto& v0 = vertices[0], v1 = vertices[1], v2 = vertices[2];
-        auto packPair = [&](const Vector<3, double>& in0,
-                const Vector<3, double>& in1, const Vector<3, double>& out) {
+        auto packPair = [&](const Vertex& in0,
+                const Vertex& in1, const Vertex& out) {
             auto packedVertices = clipPair(in0, in1, out, axisIndex, bound);
-            std::vector<Primitive> result;
+            std::vector<Primitive> result(2);
             for (const auto& pack : packedVertices)
                 result.emplace_back(pack, primitive.normal());
             return result;
         };
-        auto packSingle = [&](const Vector<3, double>& in,
-                            const Vector<3, double>& out0, const Vector<3, double>& out1) {
+        auto packSingle = [&](const Vertex& in,
+                            const Vertex& out0, const Vertex& out1) {
             auto packedVertices = clipSingle(in, out0, out1, axisIndex, bound);
-            std::vector<Primitive> result;
+            std::vector<Primitive> result(1);
             for (const auto& pack : packedVertices)
                 result.emplace_back(pack, primitive.normal());
             return result;

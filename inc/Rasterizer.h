@@ -6,6 +6,7 @@
 
 #include "Primitive.h"
 #include "Fragment.h"
+#include "BarycentricCalculator.h"
 #include <utility>
 
 class Rasterizer {
@@ -16,28 +17,37 @@ public:
 
     };
     [[nodiscard]] std::vector<Fragment> rasterize() const {
-        auto vertices = _primitive.vertices();
+        auto& vertices = _primitive.vertices();
         auto& a = vertices[0];
         auto& b = vertices[1];
         auto& c = vertices[2];
-        auto divisor = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);
-        auto matrix = Matrix<3, 3, double>(
-                b.x * c.y - c.x * b.y, b.y - c.y, c.x - b.x,
-                c.x * a.y - a.x * c.y, c.y - a.y, a.x - c.x,
-                a.x * b.y - b.x * a.y, a.y - b.y, b.x - a.x) / divisor;
+        BarycentricCalculator calculator(a.position, b.position, c.position);
+        auto matrix = calculator.calculate();
         Vector<2, int> min, max;
-        min.x = (int)std::min(a.x, std::min(b.x, c.x));
-        min.y = (int)std::min(a.y, std::min(b.y, c.y));
-        max.x = (int)std::max(a.x, std::max(b.x, c.x));
-        max.y = (int)std::max(a.y, std::max(b.y, c.y));
+        min.x = (int)std::min(a.position.x, std::min(b.position.x, c.position.x));
+        min.y = (int)std::min(a.position.y, std::min(b.position.y, c.position.y));
+        max.x = (int)std::max(a.position.x, std::max(b.position.x, c.position.x));
+        max.y = (int)std::max(a.position.y, std::max(b.position.y, c.position.y));
         std::vector<Fragment> result;
         for (int x = min.x; x < max.x; x++) {
             for (int y = min.y; y < max.y; y++) {
                 auto barycentric = matrix * Vector<3, double>(1., (double)x, (double)y);
                 if (barycentric.x >= 0. && barycentric.y >= 0. && barycentric.z >= 0.) {
                     Fragment fragment;
-                    auto z = (int)(a.z * barycentric.x + b.z * barycentric.y + c.z * barycentric.z);
+                    auto depths = Vector<3, double>(a.position.z, b.position.z, c.position.z);
+                    auto bcDepths = barycentric * depths;
+                    auto z = (int)(bcDepths.x + bcDepths.y + bcDepths.z);
                     fragment.position() = Vector<3, int>(x, y, z);
+                    fragment.worldPosition() = (a.worldPosition * barycentric.x + b.worldPosition * barycentric.y +
+                            c.worldPosition * barycentric.z);
+                    auto textureXs = Vector<3, double>(a.texture.x, b.texture.x, c.texture.x);
+                    auto bcTextureXs = barycentric * textureXs;
+                    fragment.texture().x = bcTextureXs.x + bcTextureXs.y + bcTextureXs.z;
+                    auto textureYs = Vector<3, double>(a.texture.y, b.texture.y, c.texture.y);
+                    auto bcTextureYs = barycentric * textureYs;
+                    fragment.texture().y = bcTextureYs.x + bcTextureYs.y + bcTextureYs.z;
+                    fragment.normal() = (a.normal * barycentric.x + b.normal *
+                            barycentric.y + c.normal * barycentric.z).normalize();
                     result.push_back(fragment);
                 }
             }

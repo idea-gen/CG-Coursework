@@ -9,7 +9,9 @@
 
 class VertexSpecification {
 public:
-    std::array<int, 3> vertices = {};
+    int vertex = 0;
+    int texture = 0;
+    int normal = 0;
 };
 
 

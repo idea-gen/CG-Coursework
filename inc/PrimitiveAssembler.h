@@ -14,13 +14,23 @@ class PrimitiveAssembler {
     PrimitiveSpecification _face;
     Renderable _renderable;
 public:
-    PrimitiveAssembler(PrimitiveSpecification face, Renderable renderable) : _face(face), _renderable(std::move(renderable)) {};
+    PrimitiveAssembler(PrimitiveSpecification face, Renderable renderable)
+    : _face(face), _renderable(std::move(renderable)) {};
     [[nodiscard]] Primitive assemble() const {
-        const auto& vertices = _renderable.geometricVertices();
-        auto& indices = _face.vertices;
-        std::array<Vertex, 3> primitiveVertices = {vertices[indices[0]], vertices[indices[1]], vertices[indices[2]]};
-        auto normal = _renderable.normals()[_face.normal];
-        return {primitiveVertices, normal};
+        Primitive primitive;
+        primitive.normal() = _renderable.faceNormals()[_face.normal];
+        for (int i = 0; auto specificationIndex : _face.vertices) {
+            auto specification = _renderable.vertexSpecifications()[specificationIndex];
+            Vertex vertex;
+            vertex.position = _renderable.vertices()[specification.vertex];
+            vertex.worldPosition = _renderable.worldVertices()[specification.vertex];
+            vertex.texture = _renderable.textures()[specification.texture];
+            auto modelNormal = Vector<4, double>(_renderable.vertexNormals()[specification.normal], 0.);
+            auto viewNormal = _renderable.matrix() * modelNormal;
+            vertex.normal = Vector<3, double>(viewNormal.x, viewNormal.y, viewNormal.z);
+            primitive.vertices()[i++] = vertex;
+        }
+        return primitive;
     }
 };
 

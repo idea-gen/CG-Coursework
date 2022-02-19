@@ -16,7 +16,8 @@ private:
         _matrix = _view * _model;
     }
 public:
-    explicit BackfaceCuller(const Vector<3, double>& normal) : _normal(normal) {};
+    explicit BackfaceCuller(const std::array<Vector<3, double>, 3>& normals)
+    : _normal((normals[0] + normals[1] + normals[2]).normalize()) {};
     bool cull() {
         auto homogeneous = Vector<4, double>(_normal, 0.);
         homogeneous = _matrix * homogeneous;

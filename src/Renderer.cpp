@@ -19,19 +19,22 @@ std::unique_ptr<IPixelReceiver> Renderer::render(std::unique_ptr<IPixelReceiver>
     VertexShader::SetProjectionMatrix(scene.camera().fieldOfView().matrix());
     VertexShader::SetViewportMatrix(scene.camera().viewport().matrix());
     BackfaceCuller::SetViewMatrix(scene.camera().view().matrix());
+    FragmentShader::SetLights(scene.lights());
     for (auto renderable : scene.renderables()) {
         VertexShader::SetModelMatrix(renderable.matrix());
-        for (auto& vertex : renderable.geometricVertices()) {
-            VertexShader shader(vertex);
+        for (auto& vertex : renderable.vertices()) {
+            VertexShader shader(vertex, renderable);
             vertex = shader.execute();
         }
         BackfaceCuller::SetModelMatrix(renderable.matrix());
+        FragmentShader::SetMaterial(renderable.material());
         for (auto face : renderable.primitiveSpecifications()) {
             PrimitiveAssembler assembler(face, renderable);
             auto primitive = assembler.assemble();
-            BackfaceCuller culler(primitive.normal());
-            if (culler.cull())
-                continue;
+            FragmentShader::SetFaceNormal(primitive.normal());
+            //BackfaceCuller culler(primitive.normals());
+//            if (culler.cull())
+//                continue;
             Clipper clipper(primitive, scene.camera().viewport());
             auto clipped = clipper.clip();
             for (const auto& clippedPrimitive : clipped) {

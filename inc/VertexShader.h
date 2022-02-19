@@ -6,10 +6,12 @@
 
 #include "mathematics.h"
 #include "Vertex.h"
+#include "Renderable.h"
 
 class VertexShader {
 private:
     Vector<3, double> _vertex;
+    Renderable& _renderable;
     static Matrix<4, 4, double> _model;
     static Matrix<4, 4, double> _view;
     static Matrix<4, 4, double> _projection;
@@ -19,10 +21,12 @@ private:
         _mvpv = _viewport * _projection * _view * _model;
     }
 public:
-    explicit VertexShader(const Vector<3, double>& vertex) : _vertex(vertex) {};
-    [[nodiscard]] Vector<3, double> execute() const {
+    explicit VertexShader(const Vector<3, double>& vertex, Renderable& renderable)
+    : _vertex(vertex), _renderable(renderable) {};
+    [[nodiscard]] Vector<3, double> execute() {
         auto homogeneous = Vector<4, double>(_vertex, 1);
         homogeneous = _model * homogeneous;
+        _renderable.worldVertices().emplace_back(homogeneous.x, homogeneous.y, homogeneous.z);
         homogeneous = _view * homogeneous;
         homogeneous = _projection * homogeneous;
         auto perspectiveDivisor = std::abs(homogeneous.w);

@@ -345,7 +345,7 @@ decltype(Size) Vector<Size, Type>::size() const {
 template<size_t Size, class Type>
 Vector<Size, Type> Vector<Size, Type>::normalize() {
     auto len = length();
-    std::for_each(begin(), end(), [len](const Type& el){return el / len;});
+    for (auto& el : _data) el /= len;
     return *this;
 }
 

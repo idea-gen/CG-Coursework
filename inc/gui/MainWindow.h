@@ -26,6 +26,22 @@ private:
     Scene _scene;
     Renderer _renderer;
     Modeller _modeller;
+    void sceneSetup() {
+        _modeller.init("obj");
+
+        auto cube = _modeller.getCube();
+//        cube.material().ambient() = Color(1., 1., 1.);
+        cube.material().ambient() = Color(.1745, .01175, .01175);
+        cube.material().diffuse() = Color(.61424, .04136, .04136);
+        cube.material().specular() = Color(0.727811, 0.626959, 0.626959);
+//        cube.material().shininess() = 0.6;
+        cube.material().shininess() = 0.1;
+        _scene.renderables().push_back(cube);
+        _scene.camera().view().position().set(Vector<3, double>(0., 4., 4.5));
+
+        PointLight light(1., Vector<3, double>(0., 0., -9.5));
+        _scene.lights().point().push_back(light);
+    }
 public:
     void updateScene() {
         _scene.camera().viewport().setWidth(_graphicsView->width());
@@ -37,9 +53,8 @@ public:
         _graphicsScene->addPixmap(QPixmap::fromImage(*(QImage*)(pReceiver->data())));
     }
     MainWindow() {
-        _modeller.init("obj");
-        _scene.renderables().push_back(_modeller.getCube());
-        _scene.camera().view().position().set(Vector<3, double>(0., 2., 3.5));
+        sceneSetup();
+
         _centralWidget = new QWidget;
         setCentralWidget(_centralWidget);
         _gridLayout = new QGridLayout;

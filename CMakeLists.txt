@@ -9,8 +9,6 @@ add_library(${PROJECT_NAME}_lib
         inc/visual/Camera.h
         src/visual/FieldOfView.cpp
         inc/visual/FieldOfView.h
-        inc/Model.cpp
-        inc/Model.h
         src/visual/Viewport.cpp
         inc/visual/Viewport.h
         src/VertexShader.cpp
@@ -43,11 +41,11 @@ add_library(${PROJECT_NAME}_lib
         inc/Color.h
         src/DepthBuffer.cpp
         inc/DepthBuffer.h
-        src/Transform/PositionTransform.cpp
+        src/transform/PositionTransform.cpp
         inc/transform/PositionTransform.h
-        src/Transform/RotationTransform.cpp
+        src/transform/RotationTransform.cpp
         inc/transform/RotationTransform.h
-        src/Transform/ScaleTransform.cpp
+        src/transform/ScaleTransform.cpp
         inc/transform/ScaleTransform.h
         inc/transform/DirectionTransform.h
         src/visual/View.cpp
@@ -57,7 +55,7 @@ add_library(${PROJECT_NAME}_lib
         src/VertexSpecification.cpp
         inc/VertexSpecification.h
         src/Modeller.cpp
-        inc/Modeller.h src/BackfaceCuller.cpp inc/BackfaceCuller.h)
+        inc/Modeller.h src/BackfaceCuller.cpp inc/BackfaceCuller.h src/light/DirectionalLight.cpp inc/light/DirectionalLight.h src/light/PointLight.cpp inc/light/PointLight.h src/light/SpotLight.cpp inc/light/SpotLight.h src/Lights.cpp inc/Lights.h src/BarycentricCalculator.cpp inc/BarycentricCalculator.h inc/Material.cpp inc/Material.h)
 
 target_include_directories(${PROJECT_NAME}_lib PUBLIC inc)
 

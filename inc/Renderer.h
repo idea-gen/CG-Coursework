@@ -10,7 +10,7 @@
 
 class Renderer {
 public:
-    std::unique_ptr<IPixelReceiver> render(std::unique_ptr<IPixelReceiver> pReceiver, const Scene& scene);
+    void render(std::shared_ptr<IPixelReceiver> pReceiver, const Scene& scene);
 };
 
 

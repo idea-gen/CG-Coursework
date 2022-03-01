@@ -29,5 +29,5 @@ public:
     Renderable getCylinder() {return _cylinder;};
     Renderable getPyramid() {return _pyramid;};
     Renderable getCube() {return _cube;};
-    Renderable getCone() {return _cube;};
+    Renderable getCone() {return _cone;};
 };

@@ -27,25 +27,44 @@ public:
 //
 //        }
         for (auto light : _lights.directional()) {
-            auto faceReflectionIntensity = std::max(scalarProduct(light.direction(), _faceNormal), 0.);
-            auto directColor = light.color() * faceReflectionIntensity * light.intensity();
+            auto reflectionIntensity = std::max(-scalarProduct(light.direction(), _fragment.normal()), 0.);
+            if (reflectionIntensity < 0.0005)
+                continue;
+            auto directColor = light.color() * reflectionIntensity;
             auto diffuseColor = directColor * _material.diffuse();
-            result += diffuseColor;
-        }
-        if (_faceNormal.y == -1.) {
-            int a = 5;
+            auto highlight = std::pow(reflectionIntensity,_material.shininess() * 128.) * light.intensity();
+            auto specularColor = light.color() * _material.specular() * highlight;
+            result += diffuseColor + specularColor;
         }
         for (auto light : _lights.point()) {
-            auto lightPointingVector = light.position() - _fragment.worldPosition();
-            auto distance = (lightPointingVector).length();
-            auto directColor = light.color() * light.intensity(distance);
-            auto diffuseColor = directColor * _material.diffuse();
+            auto lightPointingVector = _fragment.worldPosition() - light.position();
             auto lightPointingNormal = lightPointingVector;
             lightPointingNormal.normalize();
-            auto fragmentReflectionIntensity = scalarProduct(_fragment.normal(), lightPointingNormal);
-            auto highlight = fragmentReflectionIntensity < 0. ? 0. :
-                    std::pow(fragmentReflectionIntensity,_material.shininess() * 128.) * light.intensity(distance);
-            auto specularColor = (light.color() * _material.specular() * highlight);
+            auto reflectionIntensity = std::max(-scalarProduct(lightPointingNormal, _fragment.normal()), 0.);
+            if (reflectionIntensity < 0.0005)
+                continue;
+            auto distance = (lightPointingVector).length();
+            auto lightIntensity = light.intensity(distance);
+            auto directColor = light.color() * lightIntensity * reflectionIntensity;
+            auto diffuseColor = directColor * _material.diffuse();
+            auto highlight = std::pow(reflectionIntensity,_material.shininess() * 128.) * lightIntensity;
+            auto specularColor = light.color() * _material.specular() * highlight;
+            result += diffuseColor + specularColor;
+        }
+        for (auto light : _lights.spot()) {
+            auto lightPointingVector = light.position() - _fragment.worldPosition();
+            auto lightPointingNormal = lightPointingVector;
+            lightPointingNormal.normalize();
+            auto reflectionIntensity = std::max(-scalarProduct(light.direction(), _fragment.normal()), 0.);
+            reflectionIntensity *= std::max(-scalarProduct(light.direction(), lightPointingNormal), 0.);
+            if (reflectionIntensity < 0.0005)
+                continue;
+            auto distance = (lightPointingVector).length();
+            auto lightIntensity = light.intensity(distance);
+            auto directColor = light.color() * lightIntensity * reflectionIntensity;
+            auto diffuseColor = directColor * _material.diffuse();
+            auto highlight = std::pow(reflectionIntensity,_material.shininess() * 128.) * lightIntensity;
+            auto specularColor = light.color() * _material.specular() * highlight;
             result += diffuseColor + specularColor;
         }
         auto maxComponent = std::max(result.red(), std::max(result.green(), result.blue()));

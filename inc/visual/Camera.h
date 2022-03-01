@@ -16,7 +16,11 @@ private:
     FieldOfView _fieldOfView;
     Viewport _viewport;
 public:
-    Camera() = default;
+    Camera() {
+        _view = View();
+        _fieldOfView = FieldOfView();
+        _viewport = Viewport();
+    };
     Camera(View view, FieldOfView fieldOfView, Viewport viewport)
     : _view(std::move(view)), _fieldOfView(fieldOfView), _viewport(viewport) {};
     [[nodiscard]] View& view() {return _view;};

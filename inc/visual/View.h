@@ -12,7 +12,10 @@ private:
     PositionTransform _position;
     RotationTransform _rotation;
 public:
-    View() = default;
+    View() {
+        _position = PositionTransform();
+        _rotation = RotationTransform();
+    };
     [[nodiscard]] PositionTransform& position() {return _position;};
     [[nodiscard]] PositionTransform position() const {return _position;};
     [[nodiscard]] RotationTransform& rotation() {return _rotation;};

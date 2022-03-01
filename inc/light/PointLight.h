@@ -5,18 +5,19 @@
 #pragma once
 
 #include "Color.h"
+#include "SceneEntity.h"
 #include "mathematics.h"
 
-class PointLight {
+class PointLight : public SceneEntity {
 private:
     double _intensity = 1.;
     Color _color = {1., 1., 1.};
     Vector<3, double> _position;
     double _constantAttenuation = 1.;
-    double _linearAttenuation = .2;
+    double _linearAttenuation = .8;
 public:
-    explicit PointLight(double intensity, const Vector<3, double>& position)
-            : _intensity(intensity), _position(position) {};
+    explicit PointLight(const Vector<3, double>& position)
+            : _position(position) {};
     [[nodiscard]] Color& color() {return _color;};
     [[nodiscard]] const Color& color() const {return _color;};
     [[nodiscard]] double& intensity() {return _intensity;};

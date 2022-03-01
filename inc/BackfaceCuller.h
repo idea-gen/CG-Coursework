@@ -5,10 +5,11 @@
 #pragma once
 
 #include "mathematics.h"
+#include "Primitive.h"
 
 class BackfaceCuller {
 private:
-    Vector<3, double> _normal;
+    Primitive _primitive;
     static Matrix<4, 4, double> _model;
     static Matrix<4, 4, double> _view;
     static Matrix<4, 4, double> _matrix;
@@ -16,13 +17,14 @@ private:
         _matrix = _view * _model;
     }
 public:
-    explicit BackfaceCuller(const std::array<Vector<3, double>, 3>& normals)
-    : _normal((normals[0] + normals[1] + normals[2]).normalize()) {};
+    explicit BackfaceCuller(Primitive& primitive) : _primitive(primitive) {};
     bool cull() {
-        auto homogeneous = Vector<4, double>(_normal, 0.);
-        homogeneous = _matrix * homogeneous;
-        auto viewNormal = Vector<3, double>(homogeneous.x, homogeneous.y, homogeneous.z);
-        return scalarProduct(viewNormal, Vector<3, double>(0., 0., 1.)) > 0;
+        auto hNormal = _matrix * Vector<4, double>(_primitive.normal(), 0.);
+        auto avgVertex = (_primitive.vertices()[0].worldPosition +
+                _primitive.vertices()[1].worldPosition +
+                _primitive.vertices()[2].worldPosition) / 3.;
+        auto hVertex = _view * Vector<4, double>(avgVertex, 1.);
+        return scalarProduct(hNormal, hVertex) > 0;
     }
     static void SetModelMatrix(Matrix<4, 4, double> matrix) {_model = matrix; updateMatrix();};
     static void SetViewMatrix(Matrix<4, 4, double> matrix) {_view = matrix; updateMatrix();};

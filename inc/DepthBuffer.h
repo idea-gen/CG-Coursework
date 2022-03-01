@@ -20,9 +20,13 @@ public:
         _minDepth = viewport.nearDepth();
         std::fill(_buffer.begin(), _buffer.end(), viewport.farDepth());
     }
-    [[nodiscard]] bool test(const Fragment& fragment) const {
-        return fragment.position().z < _buffer[fragment.position().y * _width + fragment.position().x] &&
-        fragment.position().z >= _minDepth;
+    [[nodiscard]] bool test(const Fragment& fragment) {
+        if (fragment.position().z < _buffer[fragment.position().y * _width + fragment.position().x] &&
+        fragment.position().z >= _minDepth) {
+            _buffer[fragment.position().y * _width + fragment.position().x] = fragment.position().z;
+            return true;
+        }
+        return false;
     }
 };
 

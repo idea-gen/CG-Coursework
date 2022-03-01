@@ -6,6 +6,7 @@
 
 #include "mathematics.h"
 #include "transform/PositionTransform.h"
+#include "SceneEntity.h"
 #include "transform/RotationTransform.h"
 #include "transform/ScaleTransform.h"
 #include "Vertex.h"
@@ -15,7 +16,7 @@
 #include "Material.h"
 #include <vector>
 
-class Renderable {
+class Renderable : public SceneEntity {
 private:
     std::vector<Vector<3, double>> _vertices;
     std::vector<Vector<2, double>> _textures;
@@ -47,6 +48,7 @@ public:
     {return _primitiveSpecifications;};
     [[nodiscard]] std::vector<PrimitiveSpecification> primitiveSpecifications() const
     {return _primitiveSpecifications;};
+    PositionTransform& positionTransform() {return _position;};
     [[nodiscard]] Matrix<4, 4, double> matrix() const
     {return _position.matrix() * _rotation.matrix() * _scale.matrix();};
     [[nodiscard]] Material& material() {return _material;};

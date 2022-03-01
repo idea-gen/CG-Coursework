@@ -63,30 +63,30 @@ Modeller::Modeller() {
 }
 
 void Modeller::init(const std::string& objFolder) {
-//    {// cylinder reading
-//        std::ifstream cylinderFile(objFolder + _cylinderPath);
-//        if (cylinderFile.fail())
-//            throw std::runtime_error("Failed to open cylinder file");
-//        _cylinder = readModel(std::move(cylinderFile));
-//    }
-//    {// pyramid reading
-//        std::ifstream pyramidFile(objFolder + _pyramidPath);
-//        if (pyramidFile.fail())
-//            throw std::runtime_error("failed to open pyramid file");
-//        _pyramid = readModel(std::move(pyramidFile));
-//    }
+    {// cylinder reading
+        std::ifstream cylinderFile(objFolder + _cylinderPath);
+        if (cylinderFile.fail())
+            throw std::runtime_error("Failed to open cylinder file");
+        _cylinder = readModel(std::move(cylinderFile));
+    }
+    {// pyramid reading
+        std::ifstream pyramidFile(objFolder + _pyramidPath);
+        if (pyramidFile.fail())
+            throw std::runtime_error("failed to open pyramid file");
+        _pyramid = readModel(std::move(pyramidFile));
+    }
     {// cube reading
         std::ifstream cubeFile(objFolder + _cubePath);
         if (cubeFile.fail())
             throw std::runtime_error("Failed to open cube file");
         _cube = readModel(std::move(cubeFile));
     }
-//    {// cone reading
-//        std::ifstream coneFile(objFolder + _conePath);
-//        if (coneFile.fail())
-//            throw std::runtime_error("Failed to open cone file");
-//        _cone = readModel(std::move(coneFile));
-//    }
+    {// cone reading
+        std::ifstream coneFile(objFolder + _conePath);
+        if (coneFile.fail())
+            throw std::runtime_error("Failed to open cone file");
+        _cone = readModel(std::move(coneFile));
+    }
 }
 
 Renderable Modeller::readModel(std::ifstream file) {

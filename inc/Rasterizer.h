@@ -24,15 +24,16 @@ public:
         BarycentricCalculator calculator(a.position, b.position, c.position);
         auto matrix = calculator.calculate();
         Vector<2, int> min, max;
-        min.x = (int)std::min(a.position.x, std::min(b.position.x, c.position.x));
-        min.y = (int)std::min(a.position.y, std::min(b.position.y, c.position.y));
-        max.x = (int)std::max(a.position.x, std::max(b.position.x, c.position.x));
-        max.y = (int)std::max(a.position.y, std::max(b.position.y, c.position.y));
+        min.x = (int)std::min(std::round(a.position.x), std::min(std::round(b.position.x), std::round(c.position.x)));
+        min.y = (int)std::min(std::round(a.position.y), std::min(std::round(b.position.y), std::round(c.position.y)));
+        max.x = (int)std::max(std::round(a.position.x), std::max(std::round(b.position.x), std::round(c.position.x)));
+        max.y = (int)std::max(std::round(a.position.y), std::max(std::round(b.position.y), std::round(c.position.y)));
         std::vector<Fragment> result;
         for (int x = min.x; x < max.x; x++) {
             for (int y = min.y; y < max.y; y++) {
                 auto barycentric = matrix * Vector<3, double>(1., (double)x, (double)y);
-                if (barycentric.x >= 0. && barycentric.y >= 0. && barycentric.z >= 0.) {
+                static const double eps = .0;
+                if (barycentric.x >= eps && barycentric.y >= eps && barycentric.z >= eps) {
                     Fragment fragment;
                     auto depths = Vector<3, double>(a.position.z, b.position.z, c.position.z);
                     auto bcDepths = barycentric * depths;

@@ -345,7 +345,7 @@ decltype(Size) Vector<Size, Type>::size() const {
 template<size_t Size, class Type>
 Vector<Size, Type> Vector<Size, Type>::normalize() {
     auto len = length();
-    for (auto& el : _data) el /= len;
+    if (std::abs(len) > 0.0005) for (auto& el : _data) el /= len;
     return *this;
 }
 

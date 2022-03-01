@@ -34,9 +34,9 @@ public:
     };
     Viewport(int width, int height) : _width(width), _height(height) {};
     [[nodiscard]] int width() const {return _width;};
-    void setWidth(int width) {_width = width;};
+    void setWidth(int width) {_width = width; updateMatrix();};
     [[nodiscard]] int height() const {return _height;};
-    void setHeight(int height) {_height = height;};
+    void setHeight(int height) {_height = height; updateMatrix();};
     [[nodiscard]] int width0() const {return _width0;};
     [[nodiscard]] int height0() const {return _height0;};
     [[nodiscard]] int nearDepth() const {return _nearDepth;};

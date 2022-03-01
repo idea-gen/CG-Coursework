@@ -3,6 +3,10 @@ project(cg_coursework)
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 add_library(${PROJECT_NAME}_lib
         inc/mathematics.h
         src/visual/Camera.cpp
@@ -37,7 +41,7 @@ add_library(${PROJECT_NAME}_lib
         inc/Fragment.h
         src/FragmentShader.cpp
         inc/FragmentShader.h
-        inc/Color.cpp
+        src/Color.cpp
         inc/Color.h
         src/DepthBuffer.cpp
         inc/DepthBuffer.h
@@ -55,7 +59,7 @@ add_library(${PROJECT_NAME}_lib
         src/VertexSpecification.cpp
         inc/VertexSpecification.h
         src/Modeller.cpp
-        inc/Modeller.h src/BackfaceCuller.cpp inc/BackfaceCuller.h src/light/DirectionalLight.cpp inc/light/DirectionalLight.h src/light/PointLight.cpp inc/light/PointLight.h src/light/SpotLight.cpp inc/light/SpotLight.h src/Lights.cpp inc/Lights.h src/BarycentricCalculator.cpp inc/BarycentricCalculator.h inc/Material.cpp inc/Material.h)
+        inc/Modeller.h src/BackfaceCuller.cpp inc/BackfaceCuller.h src/light/DirectionalLight.cpp inc/light/DirectionalLight.h src/light/PointLight.cpp inc/light/PointLight.h src/light/SpotLight.cpp inc/light/SpotLight.h src/Lights.cpp inc/Lights.h src/BarycentricCalculator.cpp inc/BarycentricCalculator.h src/Material.cpp inc/Material.h src/SceneEntity.cpp inc/SceneEntity.h src/gui/ConvolutionFilter.cpp inc/ConvolutionFilter.h src/MaterialLibrary.cpp inc/MaterialLibrary.h)
 
 target_include_directories(${PROJECT_NAME}_lib PUBLIC inc)
 
@@ -65,7 +69,11 @@ add_library(${PROJECT_NAME}_gui
         src/gui/MainWindow.cpp
         inc/gui/MainWindow.h
         src/gui/PixelReceiver.cpp
-        inc/gui/PixelReceiver.h)
+        inc/gui/PixelReceiver.h
+        src/gui/MoveFrame.cpp
+        inc/gui/MoveFrame.h
+        src/gui/PanelLabeledFrame.cpp
+        inc/gui/PanelLabeledFrame.h src/gui/RotateFrame.cpp inc/gui/RotateFrame.h src/gui/GraphicsView.cpp inc/gui/GraphicsView.h src/gui/ModelTransformFrame.cpp inc/gui/ModelTransformFrame.h src/gui/VectorEdit.cpp inc/gui/VectorEdit.h src/gui/SceneManager.cpp inc/gui/SceneManager.h src/gui/AddModel.cpp inc/gui/AddModel.h src/gui/EditModel.cpp inc/gui/EditModel.h src/gui/AddDirect.cpp inc/gui/AddDirect.h src/gui/EditDirect.cpp inc/gui/EditDirect.h src/gui/EditPoint.cpp inc/gui/EditPoint.h src/gui/AddPoint.cpp inc/gui/AddPoint.h src/gui/AddSpot.cpp inc/gui/AddSpot.h src/gui/EditSpot.cpp inc/gui/EditSpot.h)
 
 target_include_directories(${PROJECT_NAME}_gui PUBLIC inc)
 

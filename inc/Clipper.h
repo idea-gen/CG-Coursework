@@ -126,16 +126,16 @@ public:
                                        _viewport.farDepth(), le);
             for (const auto& fClipped : farClipped) {
                 auto bottomClipped = clipFunc(fClipped, 1,
-                                           _viewport.width0(), ge);
+                                           _viewport.height0(), ge);
                 for (const auto& bClipped : bottomClipped) {
                     auto topClipped = clipFunc(bClipped, 1,
-                                               _viewport.width0() + _viewport.height(), le);
+                                               _viewport.height0() + _viewport.height(), le);
                     for (const auto& tClipped : topClipped) {
                         auto leftClipped = clipFunc(tClipped, 0,
-                                                    _viewport.height0(), ge);
+                                                    _viewport.width0(), ge);
                         for (const auto& lClipped : leftClipped) {
                             auto rightClipped = clipFunc(lClipped, 0,
-                                                         _viewport.height0() + _viewport.height(), le);
+                                                         _viewport.width0() + _viewport.width(), le);
                             result.insert(result.begin(), rightClipped.begin(), rightClipped.end());
                         }
                     }

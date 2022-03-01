@@ -27,6 +27,7 @@ public:
         _position = position;
         updateMatrix();
     }
+    [[nodiscard]] Vector<3, double> get() const {return _position;}
     [[nodiscard]] const Matrix<4, 4, double>& matrix() const {
         return _matrix;
     }

@@ -4,6 +4,7 @@
 
 #include "VertexShader.h"
 #include "PrimitiveAssembler.h"
+#include "ConvolutionFilter.h"
 #include "FragmentShader.h"
 #include "BackfaceCuller.h"
 #include "DepthBuffer.h"
@@ -11,9 +12,11 @@
 #include "Clipper.h"
 #include "Renderer.h"
 #include <iostream>
+#include <ctime>
 
 
-std::unique_ptr<IPixelReceiver> Renderer::render(std::unique_ptr<IPixelReceiver> pReceiver, const Scene &scene) {
+void Renderer::render(std::shared_ptr<IPixelReceiver> pReceiver, const Scene &scene) {
+    auto start = std::clock();
     DepthBuffer depthBuffer(scene.camera().viewport());
     VertexShader::SetViewMatrix(scene.camera().view().matrix());
     VertexShader::SetProjectionMatrix(scene.camera().fieldOfView().matrix());
@@ -32,9 +35,10 @@ std::unique_ptr<IPixelReceiver> Renderer::render(std::unique_ptr<IPixelReceiver>
             PrimitiveAssembler assembler(face, renderable);
             auto primitive = assembler.assemble();
             FragmentShader::SetFaceNormal(primitive.normal());
-            //BackfaceCuller culler(primitive.normals());
-//            if (culler.cull())
-//                continue;
+            BackfaceCuller culler(primitive);
+            if (culler.cull()) {
+                continue;
+            }
             Clipper clipper(primitive, scene.camera().viewport());
             auto clipped = clipper.clip();
             for (const auto& clippedPrimitive : clipped) {
@@ -50,5 +54,8 @@ std::unique_ptr<IPixelReceiver> Renderer::render(std::unique_ptr<IPixelReceiver>
             }
         }
     }
-    return pReceiver;
+    auto end = std::clock();
+    std::cout << "Time: " << end - start << std::endl;
+//    ConvolutionFilter filter(pReceiver);
+//    filter.filter();
 }
